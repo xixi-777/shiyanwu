@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>定制网页布局</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* 页面容器：承载背景和所有元素 */
+        .page-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: url("img/photo2.png") no-repeat center center;
+            background-size: cover;
+            cursor: pointer; /* 屏幕可点击光标提示 */
+        }
+
+        /* 左上角标识容器（放两张图） */
+        .logo-group {
+            position: absolute;
+            top: 80px;
+            left: 80px;     
+            display: flex;
+            flex-direction: column;
+            gap: 10px; /* 两张图之间的间距 */
+            z-index: 10;
+        }
+
+        /* 单个标识样式：悬浮放大效果 */
+        .logo-item {
+            width: 100px; /* 调整为适合的尺寸 */
+            height: 100px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .logo-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* 悬浮时轻微放大 */
+        .logo-item:hover {
+            transform: scale(1.05);
+        }
+
+        /* 右侧女子图片（原有） */
+        .woman-img {
+            position: absolute;
+            top: 60%;
+            right: 400px;
+            transform: translateY(-50%);
+            width: 355px;
+            height: 725px;
+            z-index: 5;
+        }
+
+        .woman-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* 新女子图（图一）：默认隐藏 */
+        .new-woman-img {
+            position: absolute;
+            /* 可根据图二效果调整位置，示例为居中偏左 */
+            top: 50%;
+            left: 10%;
+            transform: translateY(-50%);
+            width: 1700px; /* 可根据实际图片尺寸调整 */
+            height: auto;
+            z-index: 15; /* 层级高于原有女子图 */
+            display: none; /* 初始隐藏 */
+        }
+
+        .new-woman-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* 对话框（图二效果）：默认隐藏 */
+        .dialog-box {
+             position: absolute;
+                        bottom: 165px;
+                        left: 49%;
+                        transform: translateX(-50%);
+                        width: 100%;
+                        max-width: 2000px;
+                        background-color: transparent;
+                        color: #000000; /* 文字颜色保留白色，可根据需求改为其他颜色 */
+                        font-size: 30px;
+                        padding: 20px 30px;
+                        border-radius: 10px; 
+                        text-align: center;
+                        z-index: 20; /* 层级最高 */
+                        display: none; /* 初始隐藏 */
+                        font-family: "STKaiti", "华文楷体", "KaiTi", "楷体", serif;
+                        line-height: 1.3; /* 提升文字行高，增强可读性 */
+        }
+
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container" id="pageContainer">
+        <!-- 左上角两个标识 -->
+        <div class="logo-group">
+            <div class="logo-item" id="logo1">
+                <img src="img/return.png" alt="标识1">
+            </div>
+            <div class="logo-item" id="logo2">
+                <img src="img/vioce.png" alt="标识2">
+            </div>
+        </div>
+
+        <!-- 右侧女子图片（原有） -->
+        <div class="woman-img">
+            <img src="img/photo3.png" alt="woman">
+        </div>
+
+        <!-- 新女子图（图一）：替换为你的图一路径 -->
+        <div class="new-woman-img" id="newWomanImg">
+            <img src="img/comunication.png" alt="new woman">
+        </div>
+
+        <!-- 对话框（图二效果）：显示指定文字 -->
+        <div class="dialog-box" id="dialogBox">
+            “这位公子......  我原是城南的住户 , 前几日兵乱烧了家宅 , 爹娘也走散了 , 如今身上只剩这半块干粮 , 实在是没了去处......”
+        </div>
+
+    </div>
+
+    <script>
+        // 获取元素
+        const pageContainer = document.getElementById('pageContainer');
+        const newWomanImg = document.getElementById('newWomanImg');
+        const dialogBox = document.getElementById('dialogBox');
+        const clickArea = document.getElementById('clickArea');
+        const textContent = document.getElementById('textContent');
+        const logo1 = document.getElementById('logo1');
+        const logo2 = document.getElementById('logo2');
+
+        // 点击状态：0-初始态，1-显示新女子图，2-显示对话框
+        let clickState = 0;
+
+        // 屏幕点击事件：切换状态
+        pageContainer.addEventListener('click', (e) => {
+            // 排除logo区域的点击（避免logo点击触发屏幕事件）
+            if (e.target.closest('.logo-group')) return;
+
+            switch(clickState) {
+                case 0:
+                    // 第一次点击：显示新女子图
+                    newWomanImg.style.display = 'block';
+                    clickState = 1;
+                    break;
+                case 1:
+                    // 第二次点击：显示对话框
+                    dialogBox.style.display = 'block';
+                    clickState = 2;
+                    break;
+                case 2:
+                    // 可选：第三次点击重置（如需循环可保留，否则删除）
+                    newWomanImg.style.display = 'none';
+                    dialogBox.style.display = 'none';
+                    clickState = 0;
+                    break;
+            }
+        });
+
+        // 原有点击区域显示文字功能（可根据需求保留或删除）
+        clickArea.addEventListener('click', () => {
+            textContent.style.display = textContent.style.display === 'block' ? 'none' : 'block';
+        });
+
+        // 单个标识的点击事件（保留原有）
+        logo1.addEventListener('click', () => {
+            console.log('标识1被点击了');
+        });
+        logo2.addEventListener('click', () => {
+            console.log('标识2被点击了');
+        });
+    </script>
+</body>
+</html>
